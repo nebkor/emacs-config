@@ -637,23 +637,6 @@ making an abbreviation to a function."
      (error "%s is not an abbrev table" ,table)))
 #+end_src
 
-** COMMENT The =init.el= section for when I need to test on Emacs 28
-:PROPERTIES:
-:CUSTOM_ID: h:71A9907E-C8A3-477B-9CE7-F0394ED6234E
-:CREATED:  [2024-12-01 Sun 21:47]
-:END:
-
-When I need this, I uncomment this section and reexport my settings:
-
-#+begin_src emacs-lisp
-  ;; Use-Package is not built into Emacs 28
-  (when (version< emacs-version "29")
-    (eval-when-compile
-      ;; Following line is not needed if use-package.el is in ~/.emacs.d
-      (add-to-list 'load-path (expand-file-name "~/.emacs.d/elpa/use-package-2.4.6/"))
-      (require 'use-package)))
-#+end_src
-
 ** The =init.el= section to load the individual modules
 :PROPERTIES:
 :CUSTOM_ID: h:e6c4acf5-5b51-4b38-a86a-bf3f698ac872
@@ -675,7 +658,7 @@ Now we are ready to load our per-module configuration files:
   (require 'unravel-study)
   ;;; Comment this next line if you don't want to use my personal
   ;;; settings (like specific directories or org variables)
-  (require 'vedang-personal)
+  ;;(require 'vedang-personal)
 #+end_src
 
 ** The =init.el= section to name to the default frame
@@ -933,7 +916,7 @@ Prot is the lead developer and maintainer.
   ;; I am using the default values of `cursory-latest-state-file'.
 
   ;; Set last preset or fall back to desired style from `cursory-presets'.
-  (cursory-set-preset (or (cursory-restore-latest-preset) 'box))
+  (cursory-set-preset (or (cursory-restore-latest-preset) 'box-no-blink))
 
   (cursory-mode 1))
 #+end_src
@@ -1578,24 +1561,6 @@ I expect ~expreg~ to eventually completely replace ~easy-kill~ ()
            (t (expreg-expand)))))))
 #+end_src
 
-** The =unravel-essentials.el= section for Battery display
-:PROPERTIES:
-:CUSTOM_ID: h:080aa291-95b4-4d54-8783-d156b13190e9
-:END:
-
-#+begin_src emacs-lisp :tangle "unravel-modules/unravel-essentials.el"
-  ;;;; Show battery status on the mode line (battery.el)
-  (use-package battery
-    :ensure nil
-    :hook (elpaca-after-init . display-battery-mode)
-    :config
-    (setq battery-mode-line-format
-          (cond
-           ((eq battery-status-function #'battery-linux-proc-acpi)
-            "⏻ %b%p%%,%d°C ")
-           (battery-status-function
-            "⏻ %b%p%% "))))
-#+end_src
 
 ** The =unravel-essentials.el= section for OSX changes
 
@@ -1641,8 +1606,7 @@ These are modifications to basic configuration I use on my Mac OSX machine.
 
 #+begin_src emacs-lisp :tangle "unravel-modules/unravel-essentials.el"
   (defun vedang/backward-kill-word-or-kill-region (&optional arg)
-    "Rebind `C-w' to work differently based on whether a region is active.
-
+   "fancy C-w.
   If the region is selected, retain the original behaviour, otherwise call
   `backward-kill-word' instead.  ARG is passed to `backward-kill-word'."
     (interactive "p")
@@ -2030,7 +1994,7 @@ These are some settings for the default completion user interface.
     (setq completion-auto-select nil)
     (setq completions-detailed t)
     (setq completion-show-inline-help nil)
-    (setq completions-max-height 6)
+    (setq completions-max-height 10)
     (setq completions-header-format (propertize "%s candidates:\n" 'face 'bold-italic))
     (setq completions-highlight-face 'completions-highlight)
     (setq minibuffer-completion-auto-choose t)

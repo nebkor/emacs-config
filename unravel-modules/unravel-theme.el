@@ -124,7 +124,7 @@
   ;; I am using the default values of `cursory-latest-state-file'.
 
   ;; Set last preset or fall back to desired style from `cursory-presets'.
-  (cursory-set-preset (or (cursory-restore-latest-preset) 'box))
+  (cursory-set-preset (or (cursory-restore-latest-preset) 'box-no-blink))
 
   (cursory-mode 1))
 

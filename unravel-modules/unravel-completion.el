@@ -147,7 +147,7 @@
   (setq completion-auto-select nil)
   (setq completions-detailed t)
   (setq completion-show-inline-help nil)
-  (setq completions-max-height 6)
+  (setq completions-max-height 10)
   (setq completions-header-format (propertize "%s candidates:\n" 'face 'bold-italic))
   (setq completions-highlight-face 'completions-highlight)
   (setq minibuffer-completion-auto-choose t)

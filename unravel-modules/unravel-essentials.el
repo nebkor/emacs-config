@@ -146,18 +146,6 @@ word.  Fall back to regular `expreg-expand'."
          (symbol (prot/expreg-expand 2))
          (t (expreg-expand)))))))
 
-;;;; Show battery status on the mode line (battery.el)
-(use-package battery
-  :ensure nil
-  :hook (elpaca-after-init . display-battery-mode)
-  :config
-  (setq battery-mode-line-format
-        (cond
-         ((eq battery-status-function #'battery-linux-proc-acpi)
-          "⏻ %b%p%%,%d°C ")
-         (battery-status-function
-          "⏻ %b%p%% "))))
-
 ;;;; Configuration on Mac OS X machine
 (when (eq system-type 'darwin)
   (use-package ns-win
@@ -190,8 +178,7 @@ word.  Fall back to regular `expreg-expand'."
     (setq find-function-C-source-directory (expand-file-name "~/src/emacs/src/"))))
 
 (defun vedang/backward-kill-word-or-kill-region (&optional arg)
-  "Rebind `C-w' to work differently based on whether a region is active.
-
+ "fancy C-w.
 If the region is selected, retain the original behaviour, otherwise call
 `backward-kill-word' instead.  ARG is passed to `backward-kill-word'."
   (interactive "p")
