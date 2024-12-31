@@ -110,4 +110,4 @@ When called with a prefix argument NLINES, display NLINES lines before and after
   (setq trashed-sort-key '("Date deleted" . t))
   (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
-(provide 'unravel-dired)
+(provide 'nebkor-dired)

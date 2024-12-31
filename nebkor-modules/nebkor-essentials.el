@@ -112,39 +112,36 @@
   ("M-w" . easy-kill)) ; re-map kill-ring-save
 
 ;;; Install and use tree-sitter major modes where possible
-(when (treesit-available-p)
   (use-package treesit-auto
     :ensure t
     :config
     (setq treesit-auto-install 'prompt)
     (treesit-auto-add-to-auto-mode-alist)
-    (global-treesit-auto-mode)))
+    (global-treesit-auto-mode))
 
 ;;; Mark syntactic constructs efficiently if tree-sitter is available (expreg)
-(when (and (fboundp 'treesit-available-p)
-           (treesit-available-p))
-  (use-package expreg
-    :ensure t
-    :functions (prot/expreg-expand prot/expreg-expand-dwim)
-    :bind ("C-M-SPC" . prot/expreg-expand-dwim) ; overrides `mark-sexp'
-    :config
-    (defun prot/expreg-expand (n)
-      "Expand to N syntactic units, defaulting to 1 if none is provided interactively."
-      (interactive "p")
-      (dotimes (_ n)
-        (expreg-expand)))
+(use-package expreg
+  :ensure t
+  :functions (prot/expreg-expand prot/expreg-expand-dwim)
+  :bind ("C-M-SPC" . prot/expreg-expand-dwim) ; overrides `mark-sexp'
+  :config
+  (defun prot/expreg-expand (n)
+    "Expand to N syntactic units, defaulting to 1 if none is provided interactively."
+    (interactive "p")
+    (dotimes (_ n)
+      (expreg-expand)))
 
-    (defun prot/expreg-expand-dwim ()
-      "Do-What-I-Mean `expreg-expand' to start with symbol or word.
+  (defun prot/expreg-expand-dwim ()
+    "Do-What-I-Mean `expreg-expand' to start with symbol or word.
 If over a real symbol, mark that directly, else start with a
 word.  Fall back to regular `expreg-expand'."
-      (interactive)
-      (let ((symbol (bounds-of-thing-at-point 'symbol)))
-        (cond
-         ((equal (bounds-of-thing-at-point 'word) symbol)
-          (prot/expreg-expand 1))
-         (symbol (prot/expreg-expand 2))
-         (t (expreg-expand)))))))
+    (interactive)
+    (let ((symbol (bounds-of-thing-at-point 'symbol)))
+      (cond
+       ((equal (bounds-of-thing-at-point 'word) symbol)
+        (prot/expreg-expand 1))
+       (symbol (prot/expreg-expand 2))
+       (t (expreg-expand))))))
 
 ;;;; Configuration on Mac OS X machine
 (when (eq system-type 'darwin)
@@ -171,11 +168,7 @@ word.  Fall back to regular `expreg-expand'."
     (setq system-name (car (split-string system-name "\\.")))
 ;;; Binaries
     (setq vc-git-program (or (executable-find "git") "/usr/local/bin/git"))
-    (setq epg-gpg-program (or (executable-find "gpg") "/usr/local/bin/gpg"))
-;;; Source dirs
-    ;; Note: These are hard-coded to my machine.
-    (setq source-directory (expand-file-name "~/src/emacs/src/"))
-    (setq find-function-C-source-directory (expand-file-name "~/src/emacs/src/"))))
+    (setq epg-gpg-program (or (executable-find "gpg") "/usr/local/bin/gpg"))))
 
 (defun vedang/backward-kill-word-or-kill-region (&optional arg)
  "fancy C-w.
@@ -205,4 +198,32 @@ If the region is selected, retain the original behaviour, otherwise call
 (use-package helpful
   :ensure t)
 
-(provide 'unravel-essentials)
+(use-package indent-tools
+  :ensure t)
+
+(use-package key-chord
+  :ensure t
+  :config
+  (key-chord-mode +1)
+  (setq key-chord-one-key-delay 0.185)           ; e.g. "jj", default 0.2
+  (setq key-chord-two-keys-delay 0.1)          ; e.g. "jk", default 0.1
+  (setq key-chord-safety-interval-backward 0.2) ; default 0.1 is too close to key delays
+  (setq key-chord-safety-interval-forward 0.3) ; default 0.35 causes laggy experience
+
+  (key-chord-define-global "VV" 'split-window-right)
+  (key-chord-define-global "HH" 'split-window-below)
+  (key-chord-define-global "BB" 'switch-to-buffer)
+  (key-chord-define-global "CC" 'recenter)
+  (key-chord-define-global "00" 'delete-window)
+  (key-chord-define-global "11" 'delete-other-windows)
+  (key-chord-define-global "WW" 'rotate-windows)
+  )
+
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode t)
+  (setq which-key-idle-delay 0.5)
+  (setq which-key-sort-order 'which-key-description-order))
+
+(provide 'nebkor-essentials)

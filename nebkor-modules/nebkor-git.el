@@ -74,4 +74,4 @@
   (setq magit-repository-directories
         '(("~/src/prototypes" . 1))))
 
-(provide 'unravel-git)
+(provide 'nebkor-git)

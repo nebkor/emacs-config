@@ -1,12 +1,14 @@
 ;; init.el -*- lexical-binding: t; -*-
 
-;; Make native compilation silent and prune its cache.
-(when (native-comp-available-p)
-  (setq native-comp-async-report-warnings-errors 'silent) ; Emacs 28 with native compilation
-  (setq native-compile-prune-cache t)) ; Emacs 29
+(set-language-environment "UTF-8")
 
+;; Make native compilation silent and prune its cache.
+(setq native-compile-prune-cache t)
+
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
 ;; Disable custom.el by making it disposable.
-(setq custom-file (make-temp-file "emacs-custom-"))
+;; (setq custom-file (make-temp-file "emacs-custom-"))
 
 ;; Enable these commands which have been disabled by default
 (mapc
@@ -23,7 +25,7 @@
 (mapc
  (lambda (string)
    (add-to-list 'load-path (locate-user-emacs-file string)))
- '("unravel-modules" "custom-lisp"))
+ '("nebkor-modules" "custom-lisp"))
 
 ;;; Install Elpaca
 
@@ -110,24 +112,20 @@ making an abbreviation to a function."
             (seq-split definitions 2)))
      (error "%s is not an abbrev table" ,table)))
 
-(require 'unravel-theme)
-(require 'unravel-essentials)
-(require 'unravel-completion)
-(require 'unravel-search)
-(require 'unravel-dired)
-(require 'unravel-window)
-(require 'unravel-git)
-(require 'unravel-org)
-(require 'unravel-shell)
-(require 'unravel-langs)
-(require 'unravel-study)
+(require 'nebkor-theme)
+(require 'nebkor-essentials)
+(require 'nebkor-functions)
+(require 'nebkor-completion)
+(require 'nebkor-search)
+(require 'nebkor-dired)
+(require 'nebkor-window)
+(require 'nebkor-git)
+(require 'nebkor-org)
+(require 'nebkor-langs)
+(require 'nebkor-study)
 ;;; Comment this next line if you don't want to use my personal
 ;;; settings (like specific directories or org variables)
-;;(require 'vedang-personal)
-
-;; Name the default frame
-;; You can select a frame with M-x select-frame-by-name
-(add-hook 'elpaca-after-init-hook (lambda () (set-frame-name "unravel/emacs")))
+(require 'nebkor-personal)
 
 ;; Local Variables:
 ;; no-byte-compile: t

@@ -91,51 +91,49 @@
   :ensure nil
   :hook (elpaca-after-init . minibuffer-depth-indicate-mode)
   :config
-  (setq read-minibuffer-restore-windows nil) ; Emacs 28
   (setq enable-recursive-minibuffers t))
 
-(use-package minibuf-eldef
-  :ensure nil
-  :hook (elpaca-after-init . minibuffer-electric-default-mode)
-  :config
-  (setq minibuffer-default-prompt-format " [%s]")) ; Emacs 29
+;; (use-package minibuf-eldef
+;;   :ensure nil
+;;   :config
+;;   (setq minibuffer-default-prompt-format " [%s]")) ; Emacs 29
 
-(use-package rfn-eshadow
-  :ensure nil
-  :hook (minibuffer-setup . cursor-intangible-mode)
-  :config
-  ;; Not everything here comes from rfn-eshadow.el, but this is fine.
+;; (use-package rfn-eshadow
+;;   :ensure nil
+;;   :hook (minibuffer-setup . cursor-intangible-mode)
+;;   :config
+;;   ;; Not everything here comes from rfn-eshadow.el, but this is fine.
 
-  (setq resize-mini-windows t)
-  (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
-  (setq echo-keystrokes 0.25)
-  (setq kill-ring-max 60) ; Keep it small
+;;   (setq resize-mini-windows t)
+;;   (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
+;;   (setq echo-keystrokes 0.25)
+;;   (setq kill-ring-max 60) ; Keep it small
 
-  ;; Do not allow the cursor to move inside the minibuffer prompt.  I
-  ;; got this from the documentation of Daniel Mendler's Vertico
-  ;; package: <https://github.com/minad/vertico>.
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
+;;   ;; Do not allow the cursor to move inside the minibuffer prompt.  I
+;;   ;; got this from the documentation of Daniel Mendler's Vertico
+;;   ;; package: <https://github.com/minad/vertico>.
+;;   (setq minibuffer-prompt-properties
+;;         '(read-only t cursor-intangible t face minibuffer-prompt))
 
-  ;; Add prompt indicator to `completing-read-multiple'.  We display
-  ;; [`completing-read-multiple': <separator>], e.g.,
-  ;; [`completing-read-multiple': ,] if the separator is a comma.  This
-  ;; is adapted from the README of the `vertico' package by Daniel
-  ;; Mendler.  I made some small tweaks to propertize the segments of
-  ;; the prompt.
-  (defun crm-indicator (args)
-    (cons (format "[`completing-read-multiple': %s]  %s"
-                  (propertize
-                   (replace-regexp-in-string
-                    "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                    crm-separator)
-                   'face 'error)
-                  (car args))
-          (cdr args)))
+;;   ;; Add prompt indicator to `completing-read-multiple'.  We display
+;;   ;; [`completing-read-multiple': <separator>], e.g.,
+;;   ;; [`completing-read-multiple': ,] if the separator is a comma.  This
+;;   ;; is adapted from the README of the `vertico' package by Daniel
+;;   ;; Mendler.  I made some small tweaks to propertize the segments of
+;;   ;; the prompt.
+;;   (defun crm-indicator (args)
+;;     (cons (format "[`completing-read-multiple': %s]  %s"
+;;                   (propertize
+;;                    (replace-regexp-in-string
+;;                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+;;                     crm-separator)
+;;                    'face 'error)
+;;                   (car args))
+;;           (cdr args)))
 
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+;;   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-  (file-name-shadow-mode 1))
+;;   (file-name-shadow-mode 1))
 
 (use-package minibuffer
   :ensure nil
@@ -288,84 +286,6 @@
                          (?v "Variables" font-lock-variable-name-face)))))
   (add-to-list 'consult-mode-histories '(vc-git-log-edit-mode . log-edit-comment-ring)))
 
-;;; Extended minibuffer actions and more (embark.el and prot-embark.el)
-(use-package embark
-  :ensure t
-  :defer 1
-  :config
-  (setq embark-confirm-act-all nil)
-  (setq embark-mixed-indicator-both nil)
-  (setq embark-mixed-indicator-delay 1.0)
-  (setq embark-indicators '(embark-mixed-indicator embark-highlight-indicator))
-  (setq embark-verbose-indicator-nested nil) ; I think I don't have them, but I do not want them either
-  (setq embark-verbose-indicator-buffer-sections '(bindings))
-  (setq embark-verbose-indicator-excluded-actions
-        '(embark-cycle embark-act-all embark-collect embark-export embark-insert))
-
-  ;; I never cycle and want to disable the damn thing.  Normally, a
-  ;; nil value disables a key binding but here that value is
-  ;; interpreted as the binding for `embark-act'.  So I just add
-  ;; some obscure key that I do not have.  I absolutely do not want
-  ;; to cycle!
-  (setq embark-cycle-key "<XF86Travel>")
-
-  ;; I do not want `embark-org' and am not sure what is loading it.
-  ;; So I just unsert all the keymaps... This is the nuclear option
-  ;; but here we are.
-  (with-eval-after-load 'embark-org
-    (defvar prot/embark-org-keymaps
-      '(embark-org-table-cell-map
-        embark-org-table-map
-        embark-org-link-copy-map
-        embark-org-link-map
-        embark-org-src-block-map
-        embark-org-item-map
-        embark-org-plain-list-map
-        embark-org-export-in-place-map)
-      "List of Embark keymaps for Org.")
-
-    ;; Reset `prot/embark-org-keymaps'.
-    (seq-do
-     (lambda (keymap)
-       (set keymap (make-sparse-keymap)))
-     prot/embark-org-keymaps)))
-
-;; I define my own keymaps because I only use a few functions in a
-;; limited number of contexts.
-(use-package prot-embark
-  :ensure nil
-  :after embark
-  :bind
-  ( :map global-map
-    ("C-," . prot-embark-act-no-quit)
-    ("C-." . prot-embark-act-quit)
-    :map embark-collect-mode-map
-    ("C-," . prot-embark-act-no-quit)
-    ("C-." . prot-embark-act-quit)
-    :map minibuffer-local-filename-completion-map
-    ("C-," . prot-embark-act-no-quit)
-    ("C-." . prot-embark-act-quit))
-  :config
-  (setq embark-keymap-alist
-        '((buffer prot-embark-buffer-map)
-          (command prot-embark-command-map)
-          (expression prot-embark-expression-map)
-          (file prot-embark-file-map)
-          (function prot-embark-function-map)
-          (identifier prot-embark-identifier-map)
-          (package prot-embark-package-map)
-          (region prot-embark-region-map)
-          (symbol prot-embark-symbol-map)
-          (url prot-embark-url-map)
-          (variable prot-embark-variable-map)
-          (t embark-general-map))))
-
-;; Needed for correct exporting while using Embark with Consult
-;; commands.
-(use-package embark-consult
-  :ensure t
-  :after (embark consult))
-
 ;;; Detailed completion annotations (marginalia.el)
 (use-package marginalia
   :ensure t
@@ -379,16 +299,17 @@
   :hook (elpaca-after-init . vertico-mode)
   :config
   (setq vertico-scroll-margin 0)
-  (setq vertico-count 5)
+  (setq vertico-count 8)
   (setq vertico-resize t)
   (setq vertico-cycle t)
 
-  (with-eval-after-load 'rfn-eshadow
-    ;; This works with `file-name-shadow-mode' enabled.  When you are in
-    ;; a sub-directory and use, say, `find-file' to go to your home '~/'
-    ;; or root '/' directory, Vertico will clear the old path to keep
-    ;; only your current input.
-    (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)))
+  ;; (with-eval-after-load 'rfn-eshadow
+  ;;   ;; This works with `file-name-shadow-mode' enabled.  When you are in
+  ;;   ;; a sub-directory and use, say, `find-file' to go to your home '~/'
+  ;;   ;; or root '/' directory, Vertico will clear the old path to keep
+  ;;   ;; only your current input.
+  ;;   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
+  )
 
 (use-package vertico-repeat
   :after vertico
@@ -399,11 +320,11 @@
           ("M-P" . vertico-repeat-previous))
   :hook (minibuffer-setup . vertico-repeat-save))
 
-(use-package vertico-suspend
-  :after vertico
-  ;; Note: `enable-recursive-minibuffers' must be t
-  :bind ( :map global-map
-          ("M-S" . vertico-suspend)
-          ("C-x c b" . vertico-suspend)))
+;; (use-package vertico-suspend
+;;  :after vertico
+;;   ;; Note: `enable-recursive-minibuffers' must be t
+;;   :bind ( :map global-map
+;;           ("M-S" . vertico-suspend)
+;;           ("C-x c b" . vertico-suspend)))
 
-(provide 'unravel-completion)
+(provide 'nebkor-completion)
