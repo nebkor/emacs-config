@@ -149,10 +149,15 @@
 (use-package apheleia
   :ensure t
   :demand t
+  :after blackout
   :config
   (apheleia-global-mode +1)
   (with-eval-after-load 'apheleia-formatters
-    (push '(zprint . ("zprint")) apheleia-formatters)))
+    (push '(zprint . ("zprint")) apheleia-formatters))
+  :hook
+  (apheleia-mode . (lambda () (blackout 'apheleia-mode)))
+  ;;:blackout
+  )
 
 (use-package multiple-cursors
   :ensure t
@@ -160,6 +165,81 @@
   ("C->" . mc/mark-next-like-this)
   ("C-<" . mc/mark-previous-like-this)
   ("C-c C->" . mc/mark-all-like-this))
+
+(use-package lsp-mode
+  :ensure t
+  :demand t
+  :commands lsp
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(flex))) ;; Configure flex
+  :bind (("C-c C-c Q" . lsp-workspace-shutdown)
+         ("C-c C-c q" . lsp-workspace-restart))
+  :config
+  (setq lsp-rust-all-targets nil
+        lsp-rust-analyzer-cargo-all-targets nil
+        lsp-log-io nil
+        lsp-semgrep-server-command nil
+        lsp-completion-provider :none
+        lsp-inlay-hint-enable t
+        lsp-modeline-diagnostics-enable nil
+        lsp-rust-analyzer-import-merge-behaviour "full"
+        lsp-rust-analyzer-completion-auto-import-enable t
+        lsp-rust-rustfmt-path "/home/ardent/.cargo/bin/rustfmt"
+        lsp-rust-unstable-features t
+        lsp-semantic-tokens-enable t
+        lsp-semantic-tokens-warn-on-missing-face nil
+        lsp-treemacs-error-list-current-project-only t
+        lsp-ui-sideline-delay 0.1
+        lsp-ui-sideline-diagnostic-max-line-length 50
+        lsp-ui-sideline-enable nil
+        lsp-ui-sideline-show-code-actions t
+        lsp-ui-sideline-update-mode 'line
+        lsp-eldoc-render-all t
+        lsp-idle-delay 0.2
+        lsp-enable-snippet t
+        ;; enable / disable the hints as you prefer:
+        lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-call-info-full t
+        lsp-rust-analyzer-proc-macro-enable t
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-chaining-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t
+        lsp-rust-analyzer-display-closure-return-type-hints t
+        lsp-rust-analyzer-display-parameter-hints nil
+        lsp-rust-analyzer-display-reborrow-hints t)
+  :hook
+  (
+   (lsp-mode . lsp-enable-which-key-integration)
+   (lsp-mode . subword-mode)
+   (lsp-completion-mode . my/lsp-mode-setup-completion)
+   ;;(before-save . lsp-format-buffer)
+   ))
+
+(use-package cargo
+  :ensure t)
+
+(use-package rustic
+  :ensure t
+  :bind (:map rustic-mode-map
+              ("M-?" . lsp-find-references)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :hook rust-ts-mode
+  :custom
+  (rustic-format-on-save t)
+  :config
+  (setq rustic-format-on-save t
+        rust-indent-method-chain t
+        rustic-format-trigger 'on-save
+        rustic-lsp-format t
+        rustic-lsp-client 'lsp)
+  (setq-local buffer-save-without-query t)
+  (setq-local lsp-semantic-tokens-enable t))
 
 ;;;; Configuration for Python Programming
 

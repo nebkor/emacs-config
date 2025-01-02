@@ -226,4 +226,8 @@ If the region is selected, retain the original behaviour, otherwise call
   (setq which-key-idle-delay 0.5)
   (setq which-key-sort-order 'which-key-description-order))
 
+(use-package blackout
+  :ensure t
+  :demand t)
+
 (provide 'nebkor-essentials)
