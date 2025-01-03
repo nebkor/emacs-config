@@ -20,3 +20,4 @@ elpaca/
 tree-sitter/
 .mc-lists.el
 backups/
+.lsp-session-v1
