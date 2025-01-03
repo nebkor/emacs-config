@@ -1095,19 +1095,26 @@ in the function ~prot/enable-variable-pitch~.
     :demand t
     :config
   ;;;; General settings and common custom functions
-    (setq help-window-select t)
-    (setq next-error-recenter '(4)) ; center of the window
-    (setq find-library-include-other-files nil) ; Emacs 29
-    (setq tramp-connection-timeout (* 60 10)) ; seconds
-    (setq save-interprogram-paste-before-kill t)
-    (setq mode-require-final-newline t)
     (setq-default truncate-partial-width-windows nil)
-    (setq eval-expression-print-length nil)
-    (setq kill-do-not-save-duplicates t)
-    (setq scroll-error-top-bottom t)
-    (setq echo-keystrokes-help t) ; Emacs 30
-    (setq epa-keys-select-method 'minibuffer) ; Emacs 30
-    (setq debug-on-error t))
+    (setq column-number-mode t
+          debug-on-error t
+          echo-keystrokes-help t
+          epa-keys-select-method 'minibuffer
+          eval-expression-print-length nil
+          find-file-visit-truename t
+          find-library-include-other-files nil
+          fringe-mode '(1 . 0)
+          global-auto-revert-mode t
+          global-display-line-numbers-mode nil
+          help-window-select t
+          inhibit-startup-message t
+          initial-scratch-message nil
+          kill-do-not-save-duplicates t
+          mode-require-final-newline t
+          next-error-recenter '(4) ; center of the window
+          save-interprogram-paste-before-kill t
+          scroll-error-top-bottom t
+          tramp-connection-timeout (* 60 10))) ; seconds
 #+end_src
 
 ** The =nebkor-essentials.el= section for fixing PATH on OSX (~exec-path-from-shell~)
@@ -1777,10 +1784,10 @@ better to me.
 #+end_quote
 
 #+begin_src emacs-lisp :tangle "nebkor-modules/nebkor-completion.el"
-  ;; (use-package minibuf-eldef
-  ;;   :ensure nil
-  ;;   :config
-  ;;   (setq minibuffer-default-prompt-format " [%s]")) ; Emacs 29
+  (use-package minibuf-eldef
+    :ensure nil
+    :config
+    (setq minibuffer-default-prompt-format " [%s]"))
 #+end_src
 
 ** The =nebkor-completion.el= settings for common interactions
@@ -1841,42 +1848,42 @@ experience.
 #+end_quote
 
 #+begin_src emacs-lisp :tangle "nebkor-modules/nebkor-completion.el"
-  ;; (use-package rfn-eshadow
-  ;;   :ensure nil
-  ;;   :hook (minibuffer-setup . cursor-intangible-mode)
-  ;;   :config
-  ;;   ;; Not everything here comes from rfn-eshadow.el, but this is fine.
+  (use-package rfn-eshadow
+    :ensure nil
+    :hook (minibuffer-setup . cursor-intangible-mode)
+    :config
+    ;; Not everything here comes from rfn-eshadow.el, but this is fine.
 
-  ;;   (setq resize-mini-windows t)
-  ;;   (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
-  ;;   (setq echo-keystrokes 0.25)
-  ;;   (setq kill-ring-max 60) ; Keep it small
+    (setq resize-mini-windows t)
+    (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
+    (setq echo-keystrokes 0.25)
+    (setq kill-ring-max 60) ; Keep it small
 
-  ;;   ;; Do not allow the cursor to move inside the minibuffer prompt.  I
-  ;;   ;; got this from the documentation of Daniel Mendler's Vertico
-  ;;   ;; package: <https://github.com/minad/vertico>.
-  ;;   (setq minibuffer-prompt-properties
-  ;;         '(read-only t cursor-intangible t face minibuffer-prompt))
+    ;; Do not allow the cursor to move inside the minibuffer prompt.  I
+    ;; got this from the documentation of Daniel Mendler's Vertico
+    ;; package: <https://github.com/minad/vertico>.
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
 
-  ;;   ;; Add prompt indicator to `completing-read-multiple'.  We display
-  ;;   ;; [`completing-read-multiple': <separator>], e.g.,
-  ;;   ;; [`completing-read-multiple': ,] if the separator is a comma.  This
-  ;;   ;; is adapted from the README of the `vertico' package by Daniel
-  ;;   ;; Mendler.  I made some small tweaks to propertize the segments of
-  ;;   ;; the prompt.
-  ;;   (defun crm-indicator (args)
-  ;;     (cons (format "[`completing-read-multiple': %s]  %s"
-  ;;                   (propertize
-  ;;                    (replace-regexp-in-string
-  ;;                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-  ;;                     crm-separator)
-  ;;                    'face 'error)
-  ;;                   (car args))
-  ;;           (cdr args)))
+    ;; Add prompt indicator to `completing-read-multiple'.  We display
+    ;; [`completing-read-multiple': <separator>], e.g.,
+    ;; [`completing-read-multiple': ,] if the separator is a comma.  This
+    ;; is adapted from the README of the `vertico' package by Daniel
+    ;; Mendler.  I made some small tweaks to propertize the segments of
+    ;; the prompt.
+    (defun crm-indicator (args)
+      (cons (format "[`completing-read-multiple': %s]  %s"
+                    (propertize
+                     (replace-regexp-in-string
+                      "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                      crm-separator)
+                     'face 'error)
+                    (car args))
+            (cdr args)))
 
-  ;;   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-  ;;   (file-name-shadow-mode 1))
+    (file-name-shadow-mode 1))
 #+end_src
 
 ** The =nebkor-completion.el= generic minibuffer UI settings
@@ -1895,14 +1902,14 @@ These are some settings for the default completion user interface.
     (setq completions-format 'one-column)
     (setq completion-show-help nil)
     (setq completion-auto-help 'always)
-    (setq completion-auto-select nil)
+    (setq completion-auto-select t)
     (setq completions-detailed t)
     (setq completion-show-inline-help nil)
     (setq completions-max-height 10)
     (setq completions-header-format (propertize "%s candidates:\n" 'face 'bold-italic))
     (setq completions-highlight-face 'completions-highlight)
     (setq minibuffer-completion-auto-choose t)
-    (setq minibuffer-visible-completions t) ; Emacs 30
+    (setq minibuffer-visible-completions t)
     (setq completions-sort 'historical))
 #+end_src
 
@@ -2029,10 +2036,11 @@ Also see [[#h:567bb00f-1d82-4746-93e5-e0f60721728a][the =nebkor-completion.el= s
     ;; when it does not need to perform an indentation change.
     :bind (:map corfu-map ("<tab>" . corfu-complete))
     :config
-    (setq corfu-preview-current nil)
-    (setq corfu-min-width 20)
-
-    (setq corfu-popupinfo-delay '(2.0 . 1.0))
+    (setq corfu-preview-current #'insert
+          corfu-min-width 20
+          corfu-preselect 'prompt
+          corfu-on-exact-match nil
+          corfu-popupinfo-delay '(2.0 . 1.0))
     (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
 
     ;; Sort by input history (no need to modify `corfu-sort-function').
@@ -2243,12 +2251,12 @@ I use ~vertico-repeat~ to mimic the functionality that ~helm-resume~ would provi
     (setq vertico-resize t)
     (setq vertico-cycle t)
 
-    ;; (with-eval-after-load 'rfn-eshadow
-    ;;   ;; This works with `file-name-shadow-mode' enabled.  When you are in
-    ;;   ;; a sub-directory and use, say, `find-file' to go to your home '~/'
-    ;;   ;; or root '/' directory, Vertico will clear the old path to keep
-    ;;   ;; only your current input.
-    ;;   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
+    (with-eval-after-load 'rfn-eshadow
+      ;; This works with `file-name-shadow-mode' enabled.  When you are in
+      ;; a sub-directory and use, say, `find-file' to go to your home '~/'
+      ;; or root '/' directory, Vertico will clear the old path to keep
+      ;; only your current input.
+      (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
     )
 
   (use-package vertico-repeat
@@ -2260,12 +2268,12 @@ I use ~vertico-repeat~ to mimic the functionality that ~helm-resume~ would provi
             ("M-P" . vertico-repeat-previous))
     :hook (minibuffer-setup . vertico-repeat-save))
 
-  ;; (use-package vertico-suspend
-  ;;  :after vertico
-  ;;   ;; Note: `enable-recursive-minibuffers' must be t
-  ;;   :bind ( :map global-map
-  ;;           ("M-S" . vertico-suspend)
-  ;;           ("C-x c b" . vertico-suspend)))
+  (use-package vertico-suspend
+   :after vertico
+    ;; Note: `enable-recursive-minibuffers' must be t
+    :bind ( :map global-map
+            ("M-S" . vertico-suspend)
+            ("C-x c b" . vertico-suspend)))
 #+end_src
 
 ** Finally, we provide the ~nebkor-completion.el~ module
@@ -2276,7 +2284,6 @@ I use ~vertico-repeat~ to mimic the functionality that ~helm-resume~ would provi
 #+begin_src emacs-lisp :tangle "nebkor-modules/nebkor-completion.el"
 (provide 'nebkor-completion)
 #+end_src
-
 
 * The =nebkor-functions.el= module
 :PROPERTIES:
@@ -4897,9 +4904,7 @@ Use the entry point ~M-x dictionary-search~
     (with-eval-after-load 'apheleia-formatters
       (push '(zprint . ("zprint")) apheleia-formatters))
     :hook
-    (apheleia-mode . (lambda () (blackout 'apheleia-mode)))
-    ;;:blackout
-    )
+    (apheleia-mode . (lambda () (blackout 'apheleia-mode))))
 #+end_src
 
 ** The =nebkor-langs.el= settings for changing many things (~multiple-cursors~)
@@ -6596,7 +6601,7 @@ figure it out.
   (setq-default fill-column 100)
   (turn-on-auto-fill)
   (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-  (define-key icomplete-fido-mode-map (kbd "SPC") 'self-insert-command)
+  ;;(define-key icomplete-fido-mode-map (kbd "SPC") 'self-insert-command)
 
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
   (fset 'yes-or-no-p 'y-or-n-p)

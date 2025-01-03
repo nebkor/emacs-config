@@ -4,19 +4,26 @@
   :demand t
   :config
 ;;;; General settings and common custom functions
-  (setq help-window-select t)
-  (setq next-error-recenter '(4)) ; center of the window
-  (setq find-library-include-other-files nil) ; Emacs 29
-  (setq tramp-connection-timeout (* 60 10)) ; seconds
-  (setq save-interprogram-paste-before-kill t)
-  (setq mode-require-final-newline t)
   (setq-default truncate-partial-width-windows nil)
-  (setq eval-expression-print-length nil)
-  (setq kill-do-not-save-duplicates t)
-  (setq scroll-error-top-bottom t)
-  (setq echo-keystrokes-help t) ; Emacs 30
-  (setq epa-keys-select-method 'minibuffer) ; Emacs 30
-  (setq debug-on-error t))
+  (setq column-number-mode t
+        debug-on-error t
+        echo-keystrokes-help t
+        epa-keys-select-method 'minibuffer
+        eval-expression-print-length nil
+        find-file-visit-truename t
+        find-library-include-other-files nil
+        fringe-mode '(1 . 0)
+        global-auto-revert-mode t
+        global-display-line-numbers-mode nil
+        help-window-select t
+        inhibit-startup-message t
+        initial-scratch-message nil
+        kill-do-not-save-duplicates t
+        mode-require-final-newline t
+        next-error-recenter '(4) ; center of the window
+        save-interprogram-paste-before-kill t
+        scroll-error-top-bottom t
+        tramp-connection-timeout (* 60 10))) ; seconds
 
 (use-package exec-path-from-shell
   :if (memq (window-system) '(mac ns))

@@ -155,9 +155,7 @@
   (with-eval-after-load 'apheleia-formatters
     (push '(zprint . ("zprint")) apheleia-formatters))
   :hook
-  (apheleia-mode . (lambda () (blackout 'apheleia-mode)))
-  ;;:blackout
-  )
+  (apheleia-mode . (lambda () (blackout 'apheleia-mode))))
 
 (use-package multiple-cursors
   :ensure t

@@ -9,7 +9,7 @@
 (setq-default fill-column 100)
 (turn-on-auto-fill)
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-(define-key icomplete-fido-mode-map (kbd "SPC") 'self-insert-command)
+;;(define-key icomplete-fido-mode-map (kbd "SPC") 'self-insert-command)
 
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (fset 'yes-or-no-p 'y-or-n-p)

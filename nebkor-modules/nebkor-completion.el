@@ -93,47 +93,47 @@
   :config
   (setq enable-recursive-minibuffers t))
 
-;; (use-package minibuf-eldef
-;;   :ensure nil
-;;   :config
-;;   (setq minibuffer-default-prompt-format " [%s]")) ; Emacs 29
+(use-package minibuf-eldef
+  :ensure nil
+  :config
+  (setq minibuffer-default-prompt-format " [%s]"))
 
-;; (use-package rfn-eshadow
-;;   :ensure nil
-;;   :hook (minibuffer-setup . cursor-intangible-mode)
-;;   :config
-;;   ;; Not everything here comes from rfn-eshadow.el, but this is fine.
+(use-package rfn-eshadow
+  :ensure nil
+  :hook (minibuffer-setup . cursor-intangible-mode)
+  :config
+  ;; Not everything here comes from rfn-eshadow.el, but this is fine.
 
-;;   (setq resize-mini-windows t)
-;;   (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
-;;   (setq echo-keystrokes 0.25)
-;;   (setq kill-ring-max 60) ; Keep it small
+  (setq resize-mini-windows t)
+  (setq read-answer-short t) ; also check `use-short-answers' for Emacs28
+  (setq echo-keystrokes 0.25)
+  (setq kill-ring-max 60) ; Keep it small
 
-;;   ;; Do not allow the cursor to move inside the minibuffer prompt.  I
-;;   ;; got this from the documentation of Daniel Mendler's Vertico
-;;   ;; package: <https://github.com/minad/vertico>.
-;;   (setq minibuffer-prompt-properties
-;;         '(read-only t cursor-intangible t face minibuffer-prompt))
+  ;; Do not allow the cursor to move inside the minibuffer prompt.  I
+  ;; got this from the documentation of Daniel Mendler's Vertico
+  ;; package: <https://github.com/minad/vertico>.
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
 
-;;   ;; Add prompt indicator to `completing-read-multiple'.  We display
-;;   ;; [`completing-read-multiple': <separator>], e.g.,
-;;   ;; [`completing-read-multiple': ,] if the separator is a comma.  This
-;;   ;; is adapted from the README of the `vertico' package by Daniel
-;;   ;; Mendler.  I made some small tweaks to propertize the segments of
-;;   ;; the prompt.
-;;   (defun crm-indicator (args)
-;;     (cons (format "[`completing-read-multiple': %s]  %s"
-;;                   (propertize
-;;                    (replace-regexp-in-string
-;;                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-;;                     crm-separator)
-;;                    'face 'error)
-;;                   (car args))
-;;           (cdr args)))
+  ;; Add prompt indicator to `completing-read-multiple'.  We display
+  ;; [`completing-read-multiple': <separator>], e.g.,
+  ;; [`completing-read-multiple': ,] if the separator is a comma.  This
+  ;; is adapted from the README of the `vertico' package by Daniel
+  ;; Mendler.  I made some small tweaks to propertize the segments of
+  ;; the prompt.
+  (defun crm-indicator (args)
+    (cons (format "[`completing-read-multiple': %s]  %s"
+                  (propertize
+                   (replace-regexp-in-string
+                    "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                    crm-separator)
+                   'face 'error)
+                  (car args))
+          (cdr args)))
 
-;;   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-;;   (file-name-shadow-mode 1))
+  (file-name-shadow-mode 1))
 
 (use-package minibuffer
   :ensure nil
@@ -142,14 +142,14 @@
   (setq completions-format 'one-column)
   (setq completion-show-help nil)
   (setq completion-auto-help 'always)
-  (setq completion-auto-select nil)
+  (setq completion-auto-select t)
   (setq completions-detailed t)
   (setq completion-show-inline-help nil)
   (setq completions-max-height 10)
   (setq completions-header-format (propertize "%s candidates:\n" 'face 'bold-italic))
   (setq completions-highlight-face 'completions-highlight)
   (setq minibuffer-completion-auto-choose t)
-  (setq minibuffer-visible-completions t) ; Emacs 30
+  (setq minibuffer-visible-completions t)
   (setq completions-sort 'historical))
 
 ;;;; `savehist' (minibuffer and related histories)
@@ -194,10 +194,11 @@
   ;; when it does not need to perform an indentation change.
   :bind (:map corfu-map ("<tab>" . corfu-complete))
   :config
-  (setq corfu-preview-current nil)
-  (setq corfu-min-width 20)
-
-  (setq corfu-popupinfo-delay '(2.0 . 1.0))
+  (setq corfu-preview-current #'insert
+        corfu-min-width 20
+        corfu-preselect 'prompt
+        corfu-on-exact-match nil
+        corfu-popupinfo-delay '(2.0 . 1.0))
   (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
 
   ;; Sort by input history (no need to modify `corfu-sort-function').
@@ -274,7 +275,6 @@
   (setq consult-preview-key 'any)
     ;; the `imenu' extension is in its own file
   (require 'consult-imenu)
-  (consult-customize consult-imenu :initial (thing-at-point 'symbol))
   (dolist (clj '(clojure-mode clojure-ts-mode))
     (add-to-list 'consult-imenu-config
                  `(,clj :toplevel "Functions"
@@ -303,12 +303,12 @@
   (setq vertico-resize t)
   (setq vertico-cycle t)
 
-  ;; (with-eval-after-load 'rfn-eshadow
-  ;;   ;; This works with `file-name-shadow-mode' enabled.  When you are in
-  ;;   ;; a sub-directory and use, say, `find-file' to go to your home '~/'
-  ;;   ;; or root '/' directory, Vertico will clear the old path to keep
-  ;;   ;; only your current input.
-  ;;   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
+  (with-eval-after-load 'rfn-eshadow
+    ;; This works with `file-name-shadow-mode' enabled.  When you are in
+    ;; a sub-directory and use, say, `find-file' to go to your home '~/'
+    ;; or root '/' directory, Vertico will clear the old path to keep
+    ;; only your current input.
+    (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
   )
 
 (use-package vertico-repeat
@@ -320,11 +320,11 @@
           ("M-P" . vertico-repeat-previous))
   :hook (minibuffer-setup . vertico-repeat-save))
 
-;; (use-package vertico-suspend
-;;  :after vertico
-;;   ;; Note: `enable-recursive-minibuffers' must be t
-;;   :bind ( :map global-map
-;;           ("M-S" . vertico-suspend)
-;;           ("C-x c b" . vertico-suspend)))
+(use-package vertico-suspend
+ :after vertico
+  ;; Note: `enable-recursive-minibuffers' must be t
+  :bind ( :map global-map
+          ("M-S" . vertico-suspend)
+          ("C-x c b" . vertico-suspend)))
 
 (provide 'nebkor-completion)
